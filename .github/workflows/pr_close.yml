@@ -1,0 +1,48 @@
+name: PR Close Pipeline
+on:
+  pull_request:
+    types: [closed]
+env:
+  cdk-dir: ./cdk
+  cdk_action: destroy
+  aws_secret: ${{ secrets.AWS_SECRET}}
+  aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID}}
+  aws_region: ap-southeast-2
+  service_key: onboarding-buddy-infra
+  target_environment: x-${{ github.event.number}}
+  build_type: Release
+
+concurrency: alpha-${{ github.ref}}
+jobs:
+  dotnetBuild:
+    name: Build and Test
+    runs-on: ubuntu-latest
+    environment: dev
+    timeout-minutes: 20
+    steps:
+      - name: Checkout action
+        uses: actions/checkout@v3
+        with:
+          persist-credentials: false
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ env.aws_access_key_id }}
+          aws-secret-access-key: ${{ env.aws_secret }}
+          aws-region: ${{ env.aws_region }}
+
+      - name: install npm
+        run: 'sudo apt update -y && sudo apt install nodejs npm -y'
+
+      - name: Install AWS CDK and dependencies
+        env:
+          CDK_DIR: ${{ env.cdk-dir }}
+        run: |
+          sudo npm install -g aws-cdk
+          cd $CDK_DIR
+          sudo npm install
+
+      - name: CDK Destroy
+        run: cdk destroy --force
+        working-directory: ${{ env.cdk-dir }}
