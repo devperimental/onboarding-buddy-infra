@@ -14,7 +14,7 @@ env:
   build_type: Release
 concurrency: main-${{ github.ref}}
 jobs:
-  dotnetBuild:
+  infraBuild:
     name: Build and Test
     runs-on: ubuntu-latest
     environment: dev

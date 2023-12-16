@@ -14,8 +14,8 @@ env:
 
 concurrency: alpha-${{ github.ref}}
 jobs:
-  dotnetBuild:
-    name: Build and Test
+  infraBuild:
+    name: Build Infra
     runs-on: ubuntu-latest
     environment: dev
     timeout-minutes: 20

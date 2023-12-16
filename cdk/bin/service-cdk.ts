@@ -14,7 +14,8 @@ const stackSettings: IStackSettings = {
   accountId: accountId,
   service_key: service_key,
   target_environment: target_environment,
-  vpc_cidr: '10.1.0.0/16',
+  vpc_lambda_cidr: '10.1.0.0/16',
+  vpc_api_cidr: '10.3.0.0/16',
   buildType: build_Type,
   env: {
     account: accountId,
