@@ -5,7 +5,7 @@ import { ServiceCdkStack, IStackSettings } from '../lib/service-cdk';
 
 const action: string = process.env.cdk_action || 'deploy';
 const accountId: string = process.env.aws_account_id || '301804962855';
-const service_key: string = process.env.service_key || 'obb';
+const service_key: string = process.env.service_key || 'ob';
 const target_environment: string = process.env.target_environment || 'local';
 const build_Type: string = process.env.build_Type || 'Release';
 
