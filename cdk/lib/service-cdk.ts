@@ -17,30 +17,34 @@ export class ServiceCdkStack extends cdk.Stack {
     super(scope, id, props);
 
     this.createLambdaVpc(props);
-    this.createApiVpc(props);
+    //this.createApiVpc(props);
   }
 
   private createLambdaVpc(props: IStackSettings) {
     // Create a VPC for the Lambda services
-    const vpc = new ec2.Vpc(this, `lambda-vpc-${props.target_environment}`, {
-      cidr: props.vpc_lambda_cidr,
-      natGateways: 1,
-      subnetConfiguration: [
-        { cidrMask: 24, subnetType: ec2.SubnetType.PUBLIC, name: 'Public' },
-        {
-          cidrMask: 24,
-          subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS,
-          name: 'Private',
-        },
-      ],
-      maxAzs: 2,
-    });
+    const vpc = new ec2.Vpc(
+      this,
+      `lambda-vpc-alt-${props.target_environment}`,
+      {
+        cidr: props.vpc_lambda_cidr,
+        natGateways: 1,
+        subnetConfiguration: [
+          { cidrMask: 24, subnetType: ec2.SubnetType.PUBLIC, name: 'Public' },
+          {
+            cidrMask: 24,
+            subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS,
+            name: 'Private',
+          },
+        ],
+        maxAzs: 2,
+      }
+    );
 
     // Create security groups for a Lambda Service
 
     // Egress SG for outbound traffic --> SQL DB Azure
     const egressSg = new ec2.SecurityGroup(this, 'LambdaEgressSG', {
-      securityGroupName: 'lambda-egress-sg',
+      securityGroupName: 'lambda-egress-sg-alt',
       vpc: vpc,
     });
 
@@ -48,7 +52,7 @@ export class ServiceCdkStack extends cdk.Stack {
 
     // VPE SG for AWS traffic
     const vpeSg = new ec2.SecurityGroup(this, 'LambdaVpeSG', {
-      securityGroupName: 'lambda-vpe-sg',
+      securityGroupName: 'lambda-vpe-sg-alt',
       vpc: vpc,
     });
 
@@ -68,10 +72,10 @@ export class ServiceCdkStack extends cdk.Stack {
       }
     );
   }
-
+  /*
   private createApiVpc(props: IStackSettings) {
     // Create a VPC for the ECS Fargate containers
-    const vpc = new ec2.Vpc(this, `api-vpc-${props.target_environment}`, {
+    const vpc = new ec2.Vpc(this, `api-vpc-alt-${props.target_environment}`, {
       cidr: props.vpc_api_cidr,
       natGateways: 1,
       subnetConfiguration: [
@@ -88,8 +92,9 @@ export class ServiceCdkStack extends cdk.Stack {
     // Create security groups for a Fargate Service
 
     // Default SG for inbound traffic
+
     const defaultSg = new ec2.SecurityGroup(this, 'ApiDefaultSG', {
-      securityGroupName: 'api-default-sg',
+      securityGroupName: 'api-default-sg-alt',
       vpc: vpc,
     });
 
@@ -99,7 +104,7 @@ export class ServiceCdkStack extends cdk.Stack {
 
     // Egress SG for outbound traffic
     const egressSg = new ec2.SecurityGroup(this, 'ApiEgressSG', {
-      securityGroupName: 'api-egress-sg',
+      securityGroupName: 'api-egress-sg-alt',
       vpc: vpc,
     });
 
@@ -126,5 +131,8 @@ export class ServiceCdkStack extends cdk.Stack {
         securityGroups: [vpeSg],
       }
     );
+
+    
   }
+  */
 }
