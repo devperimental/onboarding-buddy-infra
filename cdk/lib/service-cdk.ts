@@ -43,7 +43,7 @@ export class ServiceCdkStack extends cdk.Stack {
 
     // save vpcId to SSM parameter
     new ssm.StringParameter(this, 'ssm-vpcId', {
-      parameterName: `/network/vpcId`,
+      parameterName: `/network/${props.target_environment}/vpcId`,
       stringValue: vpc.vpcId,
     });
 
@@ -53,7 +53,7 @@ export class ServiceCdkStack extends cdk.Stack {
     });
 
     new ssm.StringParameter(this, 'ssm-privateSubnetIds', {
-      parameterName: `/network/privateSubnetIds`,
+      parameterName: `/network/${props.target_environment}/privateSubnetIds`,
       stringValue: JSON.stringify(privateSubnetIds),
     });
 
@@ -67,7 +67,7 @@ export class ServiceCdkStack extends cdk.Stack {
 
     // save egressSecurityGroupId to SSM parameter
     new ssm.StringParameter(this, 'ssm-egressSecurityGroupId', {
-      parameterName: `/network/egressSecurityGroupId`,
+      parameterName: `/network/${props.target_environment}/egressSecurityGroupId`,
       stringValue: egressSg.securityGroupId,
     });
 
@@ -81,7 +81,7 @@ export class ServiceCdkStack extends cdk.Stack {
 
     // save vpeSecurityGroupId to SSM parameter
     new ssm.StringParameter(this, 'ssm-vpeSecurityGroupId', {
-      parameterName: `/network/vpeSecurityGroupId`,
+      parameterName: `/network/${props.target_environment}/vpeSecurityGroupId`,
       stringValue: vpeSg.securityGroupId,
     });
 
