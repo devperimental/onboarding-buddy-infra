@@ -1,6 +1,7 @@
 import * as cdk from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import * as ssm from 'aws-cdk-lib/aws-ssm';
 
 export interface IStackSettings extends cdk.StackProps {
   action: string;
@@ -40,23 +41,49 @@ export class ServiceCdkStack extends cdk.Stack {
       }
     );
 
-    // Create security groups for a Lambda Service
+    // save vpcId to SSM parameter
+    new ssm.StringParameter(this, 'ssm-vpcId', {
+      parameterName: `/network/vpcId`,
+      stringValue: vpc.vpcId,
+    });
+
+    // save privateSubnetIds to SSM parameter
+    const privateSubnetIds = vpc.privateSubnets.map((sn, i) => {
+      return sn.subnetId;
+    });
+
+    new ssm.StringParameter(this, 'ssm-privateSubnetIds', {
+      parameterName: `/network/privateSubnetIds`,
+      stringValue: JSON.stringify(privateSubnetIds),
+    });
 
     // Egress SG for outbound traffic --> SQL DB Azure
     const egressSg = new ec2.SecurityGroup(this, 'LambdaEgressSG', {
-      securityGroupName: 'lambda-egress-sg-alt',
+      securityGroupName: `lambda-egress-sg-alt-${props.target_environment}`,
       vpc: vpc,
     });
 
     egressSg.addEgressRule(ec2.Peer.ipv4('0.0.0.0/0'), ec2.Port.tcp(443));
 
+    // save egressSecurityGroupId to SSM parameter
+    new ssm.StringParameter(this, 'ssm-egressSecurityGroupId', {
+      parameterName: `/network/egressSecurityGroupId`,
+      stringValue: egressSg.securityGroupId,
+    });
+
     // VPE SG for AWS traffic
     const vpeSg = new ec2.SecurityGroup(this, 'LambdaVpeSG', {
-      securityGroupName: 'lambda-vpe-sg-alt',
+      securityGroupName: `lambda-vpe-sg-alt-${props.target_environment}`,
       vpc: vpc,
     });
 
     vpeSg.addEgressRule(ec2.Peer.ipv4('0.0.0.0/0'), ec2.Port.tcp(443));
+
+    // save vpeSecurityGroupId to SSM parameter
+    new ssm.StringParameter(this, 'ssm-vpeSecurityGroupId', {
+      parameterName: `/network/vpeSecurityGroupId`,
+      stringValue: vpeSg.securityGroupId,
+    });
 
     // VPC Endpoint to access Secrets Manager
     const secretsManagerEndpoint = new ec2.InterfaceVpcEndpoint(
@@ -71,6 +98,17 @@ export class ServiceCdkStack extends cdk.Stack {
         securityGroups: [vpeSg],
       }
     );
+
+    new cdk.CfnOutput(this, 'vpcId', { value: vpc.vpcId });
+    new cdk.CfnOutput(this, 'privateSubnetIds', {
+      value: JSON.stringify(privateSubnetIds),
+    });
+    new cdk.CfnOutput(this, 'egressSecurityGroupId', {
+      value: egressSg.securityGroupId,
+    });
+    new cdk.CfnOutput(this, 'vpeSecurityGroupId', {
+      value: vpeSg.securityGroupId,
+    });
   }
   /*
   private createApiVpc(props: IStackSettings) {

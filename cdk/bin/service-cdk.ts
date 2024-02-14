@@ -27,4 +27,4 @@ console.log(stackSettings);
 
 const app = new cdk.App();
 
-new ServiceCdkStack(app, 'OBInfraCdkStack', stackSettings);
+new ServiceCdkStack(app, `OBInfraCdkStack${target_environment}`, stackSettings);
