@@ -1,4 +1,5 @@
 import * as cdk from 'aws-cdk-lib';
+import { Fn } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as ssm from 'aws-cdk-lib/aws-ssm';
@@ -18,7 +19,6 @@ export class ServiceCdkStack extends cdk.Stack {
     super(scope, id, props);
 
     this.createLambdaVpc(props);
-    //this.createApiVpc(props);
   }
 
   private createLambdaVpc(props: IStackSettings) {
@@ -54,7 +54,7 @@ export class ServiceCdkStack extends cdk.Stack {
 
     new ssm.StringParameter(this, 'ssm-privateSubnetIds', {
       parameterName: `/network/${props.target_environment}/privateSubnetIds`,
-      stringValue: JSON.stringify(privateSubnetIds),
+      stringValue: Fn.join(',', privateSubnetIds),
     });
 
     // Egress SG for outbound traffic --> SQL DB Azure
@@ -85,19 +85,51 @@ export class ServiceCdkStack extends cdk.Stack {
       stringValue: vpeSg.securityGroupId,
     });
 
+    // Add an interface endpoint
+    vpc.addInterfaceEndpoint('SecretsManagerEndpoint', {
+      service: ec2.InterfaceVpcEndpointAwsService.SECRETS_MANAGER,
+
+      // Uncomment the following to allow more fine-grained control over
+      // who can access the endpoint via the '.connections' object.
+      // open: false
+    });
+
+    // Add an interface endpoint
+    vpc.addInterfaceEndpoint('EventBridgeEndpoint', {
+      service: ec2.InterfaceVpcEndpointAwsService.EVENTBRIDGE,
+
+      // Uncomment the following to allow more fine-grained control over
+      // who can access the endpoint via the '.connections' object.
+      // open: false
+    });
+
     // VPC Endpoint to access Secrets Manager
-    const secretsManagerEndpoint = new ec2.InterfaceVpcEndpoint(
-      this,
-      'LambdaSecretsManagerEndpoint',
-      {
-        vpc,
-        service: new ec2.InterfaceVpcEndpointService(
-          'com.amazonaws.ap-southeast-2.secretsmanager',
-          443
-        ),
-        securityGroups: [vpeSg],
-      }
-    );
+    // const secretsManagerEndpoint = new ec2.InterfaceVpcEndpoint(
+    //   this,
+    //   'SecretsManagerEndpoint',
+    //   {
+    //     vpc,
+    //     service: new ec2.InterfaceVpcEndpointService(
+    //       'com.amazonaws.ap-southeast-2.secretsmanager',
+    //       443
+    //     ),
+    //     securityGroups: [vpeSg],
+    //   }
+    // );
+
+    // // VPC Endpoint to access Secrets Manager
+    // const eventBridgeManagerEndpoint = new ec2.InterfaceVpcEndpoint(
+    //   this,
+    //   'EventBridgeEndpoint',
+    //   {
+    //     vpc,
+    //     service: new ec2.InterfaceVpcEndpointService(
+    //       'com.amazonaws.ap-southeast-2.events',
+    //       443
+    //     ),
+    //     securityGroups: [vpeSg],
+    //   }
+    // );
 
     new cdk.CfnOutput(this, 'vpcId', { value: vpc.vpcId });
     new cdk.CfnOutput(this, 'privateSubnetIds', {
