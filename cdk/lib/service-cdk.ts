@@ -78,6 +78,11 @@ export class ServiceCdkStack extends cdk.Stack {
       ec2.Port.tcp(6379)
     );
 
+    redisSg.addIngressRule(
+      ec2.Peer.securityGroupId(egressSg.securityGroupId),
+      ec2.Port.tcp(6380)
+    );
+
     // save egressSecurityGroupId to SSM parameter
     new ssm.StringParameter(this, 'ssm-egressSecurityGroupId', {
       parameterName: `/network/${props.target_environment}/egressSecurityGroupId`,
