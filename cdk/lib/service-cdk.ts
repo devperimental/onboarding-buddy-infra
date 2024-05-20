@@ -61,7 +61,6 @@ export class ServiceCdkStack extends cdk.Stack {
     const egressSg = new ec2.SecurityGroup(this, 'LambdaEgressSG', {
       securityGroupName: `lambda-egress-sg-alt-${props.target_environment}`,
       vpc: vpc,
-      description: 'Security group for Egress rules',
     });
 
     egressSg.addEgressRule(ec2.Peer.ipv4('0.0.0.0/0'), ec2.Port.tcp(443));
@@ -89,7 +88,6 @@ export class ServiceCdkStack extends cdk.Stack {
     const vpeSg = new ec2.SecurityGroup(this, 'LambdaVpeSG', {
       securityGroupName: `lambda-vpe-sg-alt-${props.target_environment}`,
       vpc: vpc,
-      description: 'Security group for VPE traffic',
     });
 
     vpeSg.addEgressRule(ec2.Peer.ipv4('0.0.0.0/0'), ec2.Port.tcp(443));
