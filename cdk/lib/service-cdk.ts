@@ -64,6 +64,8 @@ export class ServiceCdkStack extends cdk.Stack {
     });
 
     egressSg.addEgressRule(ec2.Peer.ipv4('0.0.0.0/0'), ec2.Port.tcp(443));
+    egressSg.addEgressRule(ec2.Peer.ipv4('0.0.0.0/0'), ec2.Port.tcp(6379));
+    egressSg.addIngressRule(ec2.Peer.ipv4('0.0.0.0/0'), ec2.Port.tcp(6379));
 
     // save egressSecurityGroupId to SSM parameter
     new ssm.StringParameter(this, 'ssm-egressSecurityGroupId', {
@@ -78,6 +80,7 @@ export class ServiceCdkStack extends cdk.Stack {
     });
 
     vpeSg.addEgressRule(ec2.Peer.ipv4('0.0.0.0/0'), ec2.Port.tcp(443));
+    vpeSg.addIngressRule(ec2.Peer.ipv4('0.0.0.0/0'), ec2.Port.tcp(6379));
     vpeSg.addEgressRule(ec2.Peer.ipv4('0.0.0.0/0'), ec2.Port.tcp(6379));
 
     // save vpeSecurityGroupId to SSM parameter
