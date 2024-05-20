@@ -78,6 +78,7 @@ export class ServiceCdkStack extends cdk.Stack {
     });
 
     vpeSg.addEgressRule(ec2.Peer.ipv4('0.0.0.0/0'), ec2.Port.tcp(443));
+    vpeSg.addEgressRule(ec2.Peer.ipv4('0.0.0.0/0'), ec2.Port.tcp(6379));
 
     // save vpeSecurityGroupId to SSM parameter
     new ssm.StringParameter(this, 'ssm-vpeSecurityGroupId', {
@@ -97,6 +98,14 @@ export class ServiceCdkStack extends cdk.Stack {
     // Add an interface endpoint
     vpc.addInterfaceEndpoint('EventBridgeEndpoint', {
       service: ec2.InterfaceVpcEndpointAwsService.EVENTBRIDGE,
+
+      // Uncomment the following to allow more fine-grained control over
+      // who can access the endpoint via the '.connections' object.
+      // open: false
+    });
+
+    vpc.addInterfaceEndpoint('ElasticacheEndpoint', {
+      service: ec2.InterfaceVpcEndpointAwsService.ELASTICACHE,
 
       // Uncomment the following to allow more fine-grained control over
       // who can access the endpoint via the '.connections' object.
