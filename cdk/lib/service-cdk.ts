@@ -64,6 +64,8 @@ export class ServiceCdkStack extends cdk.Stack {
     });
 
     egressSg.addEgressRule(ec2.Peer.ipv4('0.0.0.0/0'), ec2.Port.tcp(443));
+    egressSg.addEgressRule(ec2.Peer.ipv4('0.0.0.0/0'), ec2.Port.tcp(6379));
+    egressSg.addEgressRule(ec2.Peer.ipv4('0.0.0.0/0'), ec2.Port.tcp(6380));
 
     // get predefined securitygroup
     const redisSg = new ec2.SecurityGroup(this, 'RedisSG', {
