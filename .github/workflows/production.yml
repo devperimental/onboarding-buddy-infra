@@ -1,6 +1,5 @@
 name: Prod Pipeline
 on:
-  on:
   workflow_run:
     workflows: ["Main Pipeline"]
     types:
@@ -15,7 +14,7 @@ env:
   target_environment: prod
   build_type: Release
   vpc_cidr: 10.33.0.0/16
-concurrency: main-${{ github.ref}}
+concurrency: prod-${{ github.ref}}
 jobs:
   infraBuild:
     name: Build and Test
