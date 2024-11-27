@@ -32,17 +32,17 @@ jobs:
           aws-secret-access-key: ${{ env.aws_secret }}
           aws-region: ${{ env.aws_region }}
 
-      - name: install npm
-        run: 'sudo apt update -y && sudo apt install nodejs npm -y'
+#      - name: install npm
+#        run: 'sudo apt update -y && sudo apt install nodejs npm -y'
 
-      - name: Install AWS CDK and dependencies
-        env:
-          CDK_DIR: ${{ env.cdk-dir }}
-        run: |
-          sudo npm install -g aws-cdk
-          cd $CDK_DIR
-          sudo npm install
+#      - name: Install AWS CDK and dependencies
+#        env:
+#          CDK_DIR: ${{ env.cdk-dir }}
+#        run: |
+#          sudo npm install -g aws-cdk
+#          cd $CDK_DIR
+#          sudo npm install
 
-      - name: CDK Destroy
-        run: cdk destroy --force
-        working-directory: ${{ env.cdk-dir }}
+#      - name: CDK Destroy
+#        run: cdk destroy --force
+#        working-directory: ${{ env.cdk-dir }}

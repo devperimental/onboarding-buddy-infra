@@ -1,8 +1,10 @@
-name: Main Pipeline
+name: Prod Pipeline
 on:
-  push:
-    branches:
-      - 'main'
+  on:
+  workflow_run:
+    workflows: ["Main Pipeline"]
+    types:
+      - completed
 env:
   cdk-dir: ./cdk
   cdk_action: deploy
@@ -10,9 +12,9 @@ env:
   aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID}}
   aws_region: ap-southeast-2
   service_key: onboarding-buddy-infra
-  target_environment: dev
+  target_environment: prod
   build_type: Release
-  vpc_cidr: 10.2.0.0/16
+  vpc_cidr: 10.33.0.0/16
 concurrency: main-${{ github.ref}}
 jobs:
   infraBuild:

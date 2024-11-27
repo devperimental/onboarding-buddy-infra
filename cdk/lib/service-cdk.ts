@@ -9,8 +9,7 @@ export interface IStackSettings extends cdk.StackProps {
   accountId: string;
   service_key: string;
   target_environment: string;
-  vpc_lambda_cidr: string;
-  vpc_api_cidr: string;
+  vpc_cidr: string;
   buildType: string;
 }
 
@@ -27,7 +26,7 @@ export class ServiceCdkStack extends cdk.Stack {
       this,
       `lambda-vpc-alt-${props.target_environment}`,
       {
-        cidr: props.vpc_lambda_cidr,
+        cidr: props.vpc_cidr,
         natGateways: 1,
         subnetConfiguration: [
           { cidrMask: 24, subnetType: ec2.SubnetType.PUBLIC, name: 'Public' },

@@ -47,6 +47,6 @@ jobs:
         run: cdk synth
         working-directory: ${{ env.cdk-dir }}
 
-      - name: CDK Deploy
-        run: cdk deploy --require-approval never
-        working-directory: ${{ env.cdk-dir }}
+#      - name: CDK Deploy
+#        run: cdk deploy --require-approval never
+#        working-directory: ${{ env.cdk-dir }}
